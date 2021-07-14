@@ -1,3 +1,4 @@
+import random
 from abc import abstractmethod
 
 
@@ -5,10 +6,7 @@ class GardenMeta(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        """
-        Possible changes to the value of the `__init__` argument do not affect
-        the returned instance.
-        """
+
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
@@ -16,11 +14,9 @@ class GardenMeta(type):
 
 
 class Garden(metaclass=GardenMeta):
-    def __init__(self, vegetables, fruits, pests, gardener):
+    def __init__(self, vegetables, fruits):
         self.vegetables = vegetables
         self.fruits = fruits
-        self.pests = pests
-        self.gardener = gardener
 
     def show_the_garden(self):
         print(f'I have such vegetables {self.vegetables}')
@@ -96,41 +92,33 @@ class Apple(Fruits):
 
 
 class TomatoBush:
-    def __init__(self, number_of_tomatoes, type_pests, number_of_pests):
-        Pests.__init__(self, type_pests, number_of_pests)
-        self.type_pests = type_pests
-        self.number_of_pests = number_of_pests
-        self.tomatoes = [Tomato('Cherry', index) for index in range(0, number_of_tomatoes - 1)]
+    def __init__(self, number_of_tomatoes):
+        self.plant = [Tomato('Cherry', index) for index in range(0, number_of_tomatoes - 1)]
 
     def growth_all(self):
-        for tomato in self.tomatoes:
-            if self.number_of_pests > 0:
-                return print('Pests eat')
-            else:
-                tomato.growth()
-
+        for tomato in self.plant:
+            tomato.growth()
 
     def all_are_ripe(self):
-        return all([tomato.is_ripe() for tomato in self.tomatoes])
+        return all([tomato.is_ripe() for tomato in self.plant])
 
     def give_away_all(self):
-        self.tomatoes = []
+        self.plant = []
 
 
 class AppleTree:
     def __init__(self, number_of_apples):
-        self.apples = [Apple('White', index) for index in range(0, number_of_apples - 1)]
+        self.plant = [Apple('White', index) for index in range(0, number_of_apples - 1)]
 
     def growth_all(self):
-        for apple in self.apples:
+        for apple in self.plant:
             apple.growth()
 
     def all_are_ripe(self):
-        return all([apple.is_ripe() for apple in self.apples])
+        return all([apple.is_ripe() for apple in self.plant])
 
     def give_away_all(self):
-        self.apples = []
-
+        self.plant = []
 
 class Gardener:
     def __init__(self, name, plants):
@@ -148,33 +136,35 @@ class Gardener:
             else:
                 print('Too early to harvest')
 
+
 class Pests:
     def __init__(self, type_pests, number_of_pests):
         self.type_pests = type_pests
         self.number_of_pests = number_of_pests
 
-    def eat_the_plants(self):
-        pass
+    def to_eat(self, garden):
+        to_eat = random.choice(['vegetables', 'fruits'])
+        eat_object = getattr(garden, to_eat)
+        if self.number_of_pests > 5:
+           return eat_object.plant.pop() and print('Pests eat your plants')
 
-tomato_bush = TomatoBush(4,'worm', 0)
-apple_tree = AppleTree(3)
+
+
+tomato_bush = TomatoBush(2)
+apple_tree = AppleTree(2)
 pests = Pests('worm', 10)
 tom = Gardener('Tom', [tomato_bush, apple_tree])
+garden = Garden(tomato_bush,apple_tree)
 
-garden = Garden(tomato_bush, apple_tree, pests, tom)
+
+
 garden.show_the_garden()
-
-
+pests.to_eat(garden)
 tom.work()
 tom.work()
 tom.work()
 tom.work()
 tom.harvest()
 
-print(tomato_bush.tomatoes)
-print(apple_tree.apples)
-
-
-
-
-
+print(tomato_bush.plant)
+print(apple_tree.plant)
