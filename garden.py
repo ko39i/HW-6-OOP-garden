@@ -6,7 +6,6 @@ class GardenMeta(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
@@ -120,6 +119,7 @@ class AppleTree:
     def give_away_all(self):
         self.plant = []
 
+
 class Gardener:
     def __init__(self, name, plants):
         self.name = name
@@ -136,6 +136,11 @@ class Gardener:
             else:
                 print('Too early to harvest')
 
+    def poison(self):
+        if pests.number_of_pests >= 5:
+            pests.number_of_pests = 0
+        return pests.number_of_pests
+
 
 class Pests:
     def __init__(self, type_pests, number_of_pests):
@@ -146,18 +151,15 @@ class Pests:
         to_eat = random.choice(['vegetables', 'fruits'])
         eat_object = getattr(garden, to_eat)
         if self.number_of_pests > 5:
-           return eat_object.plant.pop() and print('Pests eat your plants')
-
+            return eat_object.plant.pop() and print('Pests eat your plants')
 
 
 tomato_bush = TomatoBush(2)
 apple_tree = AppleTree(2)
-pests = Pests('worm', 10)
+garden = Garden(tomato_bush, apple_tree)
 tom = Gardener('Tom', [tomato_bush, apple_tree])
-garden = Garden(tomato_bush,apple_tree)
-
-
-
+pests = Pests('worm', 10)
+tom.poison()
 garden.show_the_garden()
 pests.to_eat(garden)
 tom.work()
@@ -165,6 +167,7 @@ tom.work()
 tom.work()
 tom.work()
 tom.harvest()
+
 
 print(tomato_bush.plant)
 print(apple_tree.plant)
